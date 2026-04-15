@@ -92,6 +92,7 @@ import * as cheerio from 'cheerio';
 async function getOffersList() {
   const url = "https://rotermann.ee/tana-lounaks/";
 
+  // TODO - retry request if it fails
   const response = await fetch(url);
   const html = await response.text();
 
@@ -107,12 +108,22 @@ async function getOffersList() {
 
     if (!restaurantName) return;
 
-    $(rest)
-      .find(".single-offer--content p")
-      .each((_, offer) => {
-        const text = $(offer).text().trim();
-        if (text) {
-          result.push([restaurantName, text]);
+     $(rest)
+      .find(".columns.is-flex")
+      .each((_, row) => {
+        const content = $(row)
+          .find(".single-offer--content p")
+          .text()
+          .trim();
+
+        const price = $(row)
+          .find(".single-offer--price p")
+          .text()
+          .trim();
+
+        if (content) {
+          const fullText = price ? `${content} ${price}` : content;
+          result.push([restaurantName, fullText]);
         }
       });
   });
