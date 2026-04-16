@@ -1,10 +1,8 @@
 const formatWinnerMessage = (winner) => {
 
-  return `
-    Tänane valik - ${winner}!
+  const winnerAnnouncementMessage = `Tänane valik - *${winner}*!\n\n_Palun veendu, et valisid midagi sellest restoranist kuni 11:55_:)`;
 
-    Palun veendu, et valisid midagi sellest kohast:)
-  `
+  return winnerAnnouncementMessage;
 }
 
 export default formatWinnerMessage;
