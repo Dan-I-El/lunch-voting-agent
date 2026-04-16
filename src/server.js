@@ -26,13 +26,11 @@ const fastify = app({
 // User responds with the numbers. Should accept different numbers divided by .,/\/s. Votes are saved to the database.
 // Sends winner at 11.55am. Users cannot vote after that.
 
-// TODO - Change for production
-
 const COMMON_SCHEDULE = "* * 1-5";
 
-const GATHERING_TIME = "20 51 1 " + COMMON_SCHEDULE;
-const RESULTS_TIME = "30 5 2 " + COMMON_SCHEDULE;
-const ORDER_TIME = "20 14 2 " + COMMON_SCHEDULE;
+const GATHERING_TIME = "15 11 20 " + COMMON_SCHEDULE;
+const RESULTS_TIME = "15 38 19 " + COMMON_SCHEDULE;
+const ORDER_TIME = "20 16 18 " + COMMON_SCHEDULE;
 
 try {
   
@@ -41,7 +39,7 @@ try {
 
   const offersGatheringJob = new CronJob(
 
-    // TODO - setup Cron: https://www.npmjs.com/package/cron
+    // setup Cron: https://www.npmjs.com/package/cron
     GATHERING_TIME,
     async () => {
 
@@ -53,7 +51,7 @@ try {
 
         if (!offers || offers.length === 0) {
 
-          fastify.log.info("No offers found, skipping save and message");
+          fastify.log.info("No offers found. othing to save to the database.");
 
           return;
           
@@ -89,6 +87,14 @@ try {
 
         const winner = await calculateWinner(fastify);
 
+        if (!winner) {
+
+          fastify.log.info("Couldn't calculate winner, the message won't be sent");
+
+          return;
+          
+        }
+        
         const text = composeWinnerMessage(winner);
 
         await sendMessage(fastify, text);
@@ -115,6 +121,14 @@ try {
       try {
 
         const order = await getChosenOffers(fastify);
+
+        if (!order) {
+
+          fastify.log.info("Couldn't create an order. The message won't be sent.");
+
+          return;
+          
+        }
 
         const message = composeOrderMessage(order);
 
