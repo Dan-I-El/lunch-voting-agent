@@ -10,7 +10,11 @@ const formatOrderMessage = (order) => {
 
   const lines = Object.entries(counts).map(([title, count]) => {
 
-    return count > 1 ? `${title} x${count}` : title;
+    const orderItemPrefix = "- ";
+
+    const orderItem = count > 1 ? `${title} x${count}` : title;
+
+    return `${orderItemPrefix}${orderItem}`;
 
   });
 
