@@ -5,7 +5,7 @@ const calculateWinner = async (fastify) =>{
         SELECT o.restaurant
         FROM votes v
         JOIN offers o ON v.id = o.id
-        WHERE v.created_at::date = CURRENT_DATE
+        WHERE v.created_at::date = CURRENT_DATE AND o.created_at::date = CURRENT_DATE
         GROUP BY o.restaurant
         ORDER BY COUNT(*) DESC
         LIMIT 1
@@ -22,7 +22,6 @@ const calculateWinner = async (fastify) =>{
   `);
 
   console.log(rows[0]);
-
 
   return rows[0].restaurant;
   
