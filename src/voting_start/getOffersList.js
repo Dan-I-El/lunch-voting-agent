@@ -8,7 +8,7 @@ const URL = "https://rotermann.ee/tana-lounaks/";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function getOffersList() {
+async function getOffersList(fastify) {
   
     for (let attempt = 1; attempt <= MAX_GLOBAL_RETRIES; attempt++) {
 
