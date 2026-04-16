@@ -1,11 +1,19 @@
 const formatOrderMessage = (order) => {
 
-  const lines = order.map((offer) => {
+  const counts = {};
 
-    return offer.title;
+  order.forEach((offer) => {
+
+    counts[offer.title] = (counts[offer.title] || 0) + 1;
 
   });
-  // TODO - it should stack the same dishes by name and show quantity
+
+  const lines = Object.entries(counts).map(([title, count]) => {
+
+    return count > 1 ? `${title} x${count}` : title;
+
+  });
+
   return `
 Tänane tellimus:
 
