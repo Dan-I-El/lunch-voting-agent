@@ -1,18 +1,37 @@
 const formatLunchList = (offers) => {
 
-  const lines = offers.map((offer, index) => {
+  const grouped = offers.reduce((acc, [restaurantTitle, offer]) => {
 
-    const line = `${index + 1}. ${offer[0]} — ${offer[1]}`;
+    if (!acc[restaurantTitle]) {
 
-    return line;
+      acc[restaurantTitle] = [];
 
+    }
+
+    acc[restaurantTitle].push(offer);
+
+    return acc;
+
+  }, {});
+
+  let counter = 1;
+
+  const lines = Object.entries(grouped).map(([restaurantTitle, offers]) => {
+
+    const offersList = offers.map((offer) => {
+
+      const line = `_${counter}._ ${offer}`;
+
+      counter++;
+
+      return line;
+
+    }).join("\n");
+
+    return `*${restaurantTitle}*:\n${offersList}\n`;
   });
 
-  return `
-Tänased lõunapakkumised: 🍴
-
-${lines.join("\n")}
-  `
-}
+  return `Tänased lõunapakkumised: 🍴\n\n${lines.join("\n")}`;
+};
 
 export default formatLunchList;
