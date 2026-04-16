@@ -1,3 +1,82 @@
+import fetch from "node-fetch";
+import * as cheerio from 'cheerio';
+
+
+const MAX_GLOBAL_RETRIES = 3;
+
+const URL = "https://rotermann.ee/tana-lounaks/";
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function getOffersList() {
+  
+    for (let attempt = 1; attempt <= MAX_GLOBAL_RETRIES; attempt++) {
+
+        fastify.log.info(`Global attempt ${attempt}`);
+
+        const result = [];
+
+        try {
+
+        const response = await fetch(URL);
+
+        const html = await response.text();
+
+        const $ = cheerio.load(html);
+
+
+        $(".lunch--inner").each((_, rest) => {
+          const restaurantName = $(rest)
+            .find(".lunch--title h3")
+            .text()
+            .trim();
+
+          if (!restaurantName) return;
+
+          $(rest)
+            .find(".columns.is-flex")
+            .each((_, row) => {
+              const content = $(row)
+                .find(".single-offer--content p")
+                .text()
+                .trim();
+
+              const price = $(row)
+                .find(".single-offer--price p")
+                .text()
+                .trim();
+
+              if (content) {
+                const fullText = price ? `${content} ${price}` : content;
+                result.push([restaurantName, fullText]);
+              }
+            });
+        });
+
+        return result;
+
+        } catch (error) {
+
+            fastify.log.error({ error }, "Failed to fetch or parse offers");
+
+        }
+
+        if (attempt < MAX_GLOBAL_RETRIES) {
+
+          fastify.log.warn("All models failed. Retrying in 3 minutes...");
+
+          await sleep(3 * 60 * 1000);
+
+        }
+        
+    }
+
+    fastify.log.error("All retries exhausted.");
+
+    return null;
+
+}
+
 // import OpenAI from "openai";
 
 // const URL = "https://rotermann.ee/tana-lounaks/";
@@ -37,10 +116,6 @@
 //     "deepseek-chat", // Latest DeepSeek model (V3.2)
 //     // "deepseek-reasoner", // Optional: for complex reasoning tasks
 // ];
-
-// const MAX_GLOBAL_RETRIES = 3;
-
-// const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // const getOffersList = async (fastify) => {
 //     const baseRequest = {
@@ -85,51 +160,4 @@
 //     return null;
 // };
 
-// export default getOffersList;
-import fetch from "node-fetch";
-import * as cheerio from 'cheerio';
-
-async function getOffersList() {
-  const url = "https://rotermann.ee/tana-lounaks/";
-
-  // TODO - retry request if it fails
-  const response = await fetch(url);
-  const html = await response.text();
-
-  const $ = cheerio.load(html);
-
-  const result = [];
-
-  $(".lunch--inner").each((_, rest) => {
-    const restaurantName = $(rest)
-      .find(".lunch--title h3")
-      .text()
-      .trim();
-
-    if (!restaurantName) return;
-
-     $(rest)
-      .find(".columns.is-flex")
-      .each((_, row) => {
-        const content = $(row)
-          .find(".single-offer--content p")
-          .text()
-          .trim();
-
-        const price = $(row)
-          .find(".single-offer--price p")
-          .text()
-          .trim();
-
-        if (content) {
-          const fullText = price ? `${content} ${price}` : content;
-          result.push([restaurantName, fullText]);
-        }
-      });
-  });
-
-  return result;
-}
-
 export default getOffersList;
-
