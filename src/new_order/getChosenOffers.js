@@ -1,6 +1,5 @@
 const getChosenOffers = async (fastify) => {
 
-    // TODO - check if timezone is always correct
   const chosenOffers = await fastify.pg.query(`
     WITH today_votes AS (
         SELECT v.person, v.id, o.restaurant, o.title, v.created_at

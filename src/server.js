@@ -28,9 +28,9 @@ const fastify = app({
 
 const COMMON_SCHEDULE = "* * 1-5";
 
-const GATHERING_TIME = "15 11 20 " + COMMON_SCHEDULE;
-const RESULTS_TIME = "15 38 19 " + COMMON_SCHEDULE;
-const ORDER_TIME = "20 16 18 " + COMMON_SCHEDULE;
+const GATHERING_TIME = "20 51 15 " + COMMON_SCHEDULE;
+const RESULTS_TIME = "25 54 15 " + COMMON_SCHEDULE;
+const ORDER_TIME = "20 56 15 " + COMMON_SCHEDULE;
 
 try {
   
@@ -74,7 +74,7 @@ try {
     },
     null,
     true,
-    "Europe/Tallinn"
+    "Europe/Tallinn",
   );
 
   const votesSendingJob = new CronJob(

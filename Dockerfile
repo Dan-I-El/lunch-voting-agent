@@ -1,4 +1,5 @@
 FROM node:20
+ENV TZ=UTC
 
 WORKDIR /app
 
