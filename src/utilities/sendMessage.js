@@ -33,7 +33,7 @@ const sendMessage = async (fastify, text) => {
 
     }
     
-    return data; // contains ts (message timestamp);
+    return data;
 
   } catch (error) {
 
