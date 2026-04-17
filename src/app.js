@@ -1,8 +1,8 @@
 import Fastify from 'fastify';
-import crypto from 'node:crypto';
 import dbConnector from './connector.js';
-import parseVoteMessage from './utilities/parser/votes.js';
+import sendMessage from './utilities/sendMessage.js';
 import verifySlackRequest from './utilities/verifySlackRequest.js';
+import parseVoteMessage from './utilities/parser/votes.js';
 // import { getOffers } from './jobs/collectOffers.js';
 
 
@@ -39,25 +39,57 @@ function build(options = {}) {
 
             console.log(`Content: \ntext: ${text}\nuser: ${user}\nts:${ts}\nthreadts: ${thread_ts}\nchannel: ${channel}`);
 
+            // const now = new Date();
+
+            // const votingEndTime = new Date();
+
+            // votingEndTime.setHours(11, 55, 0, 0);
+
+            // if (now > votingEndTime) {
+
+            //     await sendMessage(app, "Sorry, voting has ended for today!");
+
+            // }
+
+
             const votes = parseVoteMessage(text);
 
-            let CLIENT;
+            let client;
 
             try {
 
-                // TODO - it shold only work if 'offers' table has any offers with the current date. Shouldn't work after 11.55
-                CLIENT = await app.pg.connect();
-                
-                for (const vote of votes) {
+                client = await app.pg.connect();
 
-                    await CLIENT.query(`
-                        WITH offer_id AS (
-                            SELECT id FROM offers WHERE number=$1
-                        )
-                        INSERT INTO votes (id, person) SELECT id, $2 FROM offer_id;
-                    `,[vote, user]);
+                // TODO - handle complex dishes
+                const result = await client.query(
+                    `
+                        INSERT INTO votes (id, person)
+                        SELECT id, $2
+                        FROM offers
+                        WHERE number = ANY($1)
+                        AND created_at::date = CURRENT_DATE
+                        RETURNING id;
+                    `,
+                    [votes, user]
+                );
 
+                if (result.rowCount === 0) {
+
+                    app.log.info("No offers found for today");
+
+                    return { message: "No offers available today" };
                 }
+
+                // for (const vote of votes) {
+
+                //     await client.query(`
+                //         WITH offer_id AS (
+                //             SELECT id FROM offers WHERE number=$1 AND created_at::date = CURRENT_DATE
+                //         )
+                //         INSERT INTO votes (id, person) SELECT id, $2 FROM offer_id;
+                //     `,[vote, user]);
+
+                // }
                 
                 app.log.info(`Saved ${votes.length} votes`);
 
@@ -68,9 +100,9 @@ function build(options = {}) {
                 
             } finally {
                 
-                if (CLIENT) {
+                if (client) {
 
-                CLIENT.release();
+                    client.release();
                 
                 }
                 
