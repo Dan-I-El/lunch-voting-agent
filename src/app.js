@@ -54,23 +54,27 @@ function build(options = {}) {
 
             const votes = parseVoteMessage(text);
 
+            const numbers = votes.map(voteNumber => voteNumber[0]);
+
+            const flags = votes.map(voteBulk => voteBulk[1]);
+
             let client;
 
             try {
 
                 client = await app.pg.connect();
 
-                // TODO - handle complex dishes
                 const result = await client.query(
                     `
-                        INSERT INTO votes (id, person)
-                        SELECT id, $2
-                        FROM offers
-                        WHERE number = ANY($1)
-                        AND created_at::date = CURRENT_DATE
+                        INSERT INTO votes (id, person, bulk)
+                        SELECT o.id, $3, t.flag
+                        FROM offers AS o
+                        JOIN unnest($1::int[], $2::boolean[]) AS t(number, flag)
+                        ON o.number = t.number
+                        WHERE o.created_at::date = CURRENT_DATE
                         RETURNING id;
                     `,
-                    [votes, user]
+                    [numbers, flags, user]
                 );
 
                 if (result.rowCount === 0) {

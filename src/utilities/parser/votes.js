@@ -17,7 +17,23 @@ function parseVoteMessage(input) {
 
   }
 
-  const votesList = trimmed.split(/[,\/]/);
+  let votesList;
+
+  const THIS_IS_BULK = trimmed.includes(",");
+
+  if (THIS_IS_BULK) {
+
+    votesList = trimmed.split(",");
+
+  } else if (trimmed.includes("/")) {
+
+    votesList = trimmed.split("/");
+
+  } else {
+
+    votesList = [trimmed];
+    
+  }
 
   const numbers = votesList.map((vote, index) => {
     
@@ -37,10 +53,12 @@ function parseVoteMessage(input) {
 
     }
 
-    return number;
+    return [ number, THIS_IS_BULK ];
+    
   });
 
   return numbers;
+  
 }
 
 export default parseVoteMessage;
