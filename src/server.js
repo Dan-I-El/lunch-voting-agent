@@ -27,10 +27,9 @@ const fastify = app({
 // Sends winner at 11.55am. Users cannot vote after that.
 
 const COMMON_SCHEDULE = "* * 1-7";
-
-const GATHERING_TIME = "30 58 14 " + COMMON_SCHEDULE;
-const RESULTS_TIME = "5 49 15 " + COMMON_SCHEDULE;
-const ORDER_TIME = "5 50 15 " + COMMON_SCHEDULE;
+const GATHERING_TIME = "55 0 " + COMMON_SCHEDULE;
+const RESULTS_TIME = "59 0 " + COMMON_SCHEDULE;
+const ORDER_TIME = "1 1 " + COMMON_SCHEDULE;
 
 try {
   
@@ -117,8 +116,6 @@ try {
         await sendMessage(fastify, message);
 
         fastify.log.info("Order message sent");
-
-        fastify.log.error(error);
 
     },
     start: true,
