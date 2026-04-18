@@ -37,8 +37,7 @@ function build(options = {}) {
                 channel
             } = event;
 
-            console.log(`Content: \ntext: ${text}\nuser: ${user}\nts:${ts}\nthreadts: ${thread_ts}\nchannel: ${channel}`);
-
+            // TODO - add voting time limitation
             // const now = new Date();
 
             // const votingEndTime = new Date();
