@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import dbConnector from './connector.js';
 import sendMessage from './utilities/sendMessage.js';
 import verifySlackRequest from './utilities/verifySlackRequest.js';
+import getTallinnTime from './utilities/getTallinnTime.js';
 import parseVoteMessage from './utilities/parser/votes.js';
 // import { getOffers } from './jobs/collectOffers.js';
 
@@ -37,19 +38,19 @@ function build(options = {}) {
                 channel
             } = event;
 
-            // TODO - add voting time limitation
-            // const now = new Date();
+            const now = getTallinnTime();
 
-            // const votingEndTime = new Date();
+            const votingEndTime = new Date(now);
 
-            // votingEndTime.setHours(11, 55, 0, 0);
+            votingEndTime.setHours(11, 55, 0, 0);
 
-            // if (now > votingEndTime) {
+            if (now > votingEndTime) {
 
-            //     await sendMessage(app, "Sorry, voting has ended for today!");
+                await sendMessage(app, "Mu tööpäev on tänaseks lõppenud. Näeme homme! :)");
 
-            // }
+                return;
 
+            }
 
             const votes = parseVoteMessage(text);
 
