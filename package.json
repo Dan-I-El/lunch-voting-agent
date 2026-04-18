@@ -2,7 +2,7 @@
   "type": "module",
   "main": "src/server.js",
   "scripts": {
-    "start": "fastify start src/server.js"
+    "start": "node src/server.js"
   },
   "dependencies": {
     "@fastify/postgres": "^6.0.2",

@@ -26,99 +26,81 @@ const fastify = app({
 // User responds with the numbers. Should accept different numbers divided by .,/\/s. Votes are saved to the database.
 // Sends winner at 11.55am. Users cannot vote after that.
 
-const COMMON_SCHEDULE = "* * 1-5";
+const COMMON_SCHEDULE = "* * 1-7";
 
-const GATHERING_TIME = "20 51 15 " + COMMON_SCHEDULE;
-const RESULTS_TIME = "25 54 15 " + COMMON_SCHEDULE;
-const ORDER_TIME = "20 56 15 " + COMMON_SCHEDULE;
+const GATHERING_TIME = "30 58 14 " + COMMON_SCHEDULE;
+const RESULTS_TIME = "5 49 15 " + COMMON_SCHEDULE;
+const ORDER_TIME = "5 50 15 " + COMMON_SCHEDULE;
 
 try {
   
 // add appropriate 'host' parameter
-  await fastify.listen({ port: 3000, host: '0.0.0.0' });
+  fastify.listen({ port: process.env.APP_PORT || 8080, host: '0.0.0.0' });
 
-  const offersGatheringJob = new CronJob(
-
-    // setup Cron: https://www.npmjs.com/package/cron
-    GATHERING_TIME,
-    async () => {
+  const offersGatheringJob = CronJob.from({
+    cronTime: GATHERING_TIME,
+    onTick: async () => {
 
       fastify.log.info("Running offers gathering job");
 
-      try {
+      const offers = await getOffersList(fastify);
 
-        const offers = await getOffersList(fastify);
+      if (!offers || offers.length === 0) {
 
-        if (!offers || offers.length === 0) {
+        fastify.log.info("No offers found. othing to save to the database.");
 
-          fastify.log.info("No offers found. othing to save to the database.");
-
-          return;
-          
-        }
-
-        await saveOffers(fastify, offers);
-
-        const text = composeLunchListMessage(offers);
-          
-        await sendMessage(fastify, text);
-
-        fastify.log.info("Lunch message sent");
-
-      } catch (error) {
-
-        fastify.log.error(error);
-
-      }
-
-    },
-    null,
-    true,
-    "Europe/Tallinn",
-  );
-
-  const votesSendingJob = new CronJob(
-    RESULTS_TIME,
-    async () => {
-
-      fastify.log.info("Running lunch decision job");
-
-      try {
-
-        const winner = await calculateWinner(fastify);
-
-        if (!winner) {
-
-          fastify.log.info("Couldn't calculate winner, the message won't be sent");
-
-          return;
-          
-        }
+        return;
         
-        const text = composeWinnerMessage(winner);
-
-        await sendMessage(fastify, text);
-
-        fastify.log.info("Winner message sent");
-
-      } catch (error) {
-
-        fastify.log.error(error);
       }
 
-    },
-    null,
-    true,
-    "Europe/Tallinn",
-  );
+      await saveOffers(fastify, offers);
 
-  const orderSendingJob = new CronJob(
-    ORDER_TIME,
-    async () => {
+      const text = composeLunchListMessage(offers);
+        
+      await sendMessage(fastify, text);
+
+      fastify.log.info("Lunch message sent");
+
+    },
+    // TODO - improve error handling
+    start: true,
+    timeZone: "Europe/Tallinn",
+    errorHandler: (error) => (fastify.log.error(error)),
+  });
+
+  const votesSendingJob = CronJob.from({
+    cronTime: RESULTS_TIME,
+    onTick: async () => {
+
+      fastify.log.info("Running votes gathering job");
+
+      const winner = await calculateWinner(fastify);
+
+      if (!winner) {
+
+        fastify.log.info("Couldn't calculate winner, the message won't be sent");
+
+        return;
+        
+      }
+      
+      const text = composeWinnerMessage(winner);
+
+      await sendMessage(fastify, text);
+
+      fastify.log.info("Winner message sent");
+
+    },
+    start: true,
+    timeZone: "Europe/Tallinn",
+    errorHandler: (error) => (fastify.log.error(error)),
+  });
+
+  const orderSendingJob = CronJob.from({
+    cronTime: ORDER_TIME,
+    onTick: async () => {
 
       fastify.log.info("Running order composing job");
-
-      try {
 
         const order = await getChosenOffers(fastify);
 
@@ -136,16 +118,13 @@ try {
 
         fastify.log.info("Order message sent");
 
-      } catch (error) {
-
         fastify.log.error(error);
-      }
 
     },
-    null,
-    true,
-    "Europe/Tallinn",
-  );
+    start: true,
+    timeZone: "Europe/Tallinn",
+    errorHandler: (error) => (fastify.log.error(error)),
+  });
 
 } catch (err) {
 

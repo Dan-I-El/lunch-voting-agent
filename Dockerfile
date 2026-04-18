@@ -1,15 +1,14 @@
 FROM node:20
-ENV TZ=UTC
 
 WORKDIR /app
 
 COPY package*.json ./
 RUN npm install
 
-COPY . .
+COPY . /app
 
-EXPOSE 3000
+# RUN apk --no-cache add ca-certificates
 
-CMD ["node", "src/server.js"]
+EXPOSE 8080
 
-COPY --chown=app:app . /app
+CMD ["npm", "start"]

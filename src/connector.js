@@ -10,7 +10,8 @@ async function dbConnector(fastify, options) {
     const port = process.env.POSTGRES_PORT || '5432';
 
     // ADD Roles and RLS
-    const connectionString = `postgres://${encodeURIComponent(user)}:${encodeURIComponent(password)}@${host}:${port}/${database}`;
+    // const connectionString = `postgres://${encodeURIComponent(user)}:${encodeURIComponent(password)}@${host}:${port}/${database}`;
+    const connectionString = process.env.DATABASE_URL || `postgres://${encodeURIComponent(user)}:${encodeURIComponent(password)}@${host}:${port}/${database}`;
 
     await fastify.register(fastifyPostgres, {
         connectionString,
