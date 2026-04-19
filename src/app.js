@@ -38,21 +38,37 @@ function build(options = {}) {
                 channel
             } = event;
 
-            // const now = getTallinnTime();
+            app.log.info({ text, user, channel, ts, thread_ts }, 'Incoming Slack message');
 
-            // const votingEndTime = new Date(now);
+            const now = getTallinnTime();
 
-            // votingEndTime.setHours(11, 55, 0, 0);
+            const votingEndTime = new Date(now);
 
-            // if (now > votingEndTime) {
+            votingEndTime.setHours(11, 55, 0, 0);
 
-            //     await sendMessage(app, "Mu tööpäev on tänaseks lõppenud. Näeme homme! :)");
+            if (now > votingEndTime) {
 
-            //     return;
+                await sendMessage(app, "Mu tööpäev on tänaseks lõppenud. Näeme homme! :)");
 
-            // }
+                return;
 
-            const votes = parseVoteMessage(text);
+            }
+
+            let votes;
+
+            try {
+
+                votes = parseVoteMessage(text);
+
+            } catch (error) {
+
+                app.log.warn({ text, user, error }, 'Vote parse failed');
+
+                await sendMessage(app, "Ma ei saanud su hääletusest aru. Palun saada ainult numbrid, nt 6/7 või 6,7.");
+
+                return;
+
+            }
 
             const numbers = votes.map(voteNumber => voteNumber[0]);
 

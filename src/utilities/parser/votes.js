@@ -16,9 +16,7 @@ function parseVoteMessage(input) {
   const validPattern = /^(\d+)([\/,](\d+))*$/;
 
   if (!validPattern.test(trimmed)) {
-    throw new Error(
-      'Formaat on vale: kasuta nt "3", "4/5/6" või "4,5,6" - ära kasuta tühikuid või erinevaid eraldajaid.'
-    );
+    throw new Error("Wrong format.");
   }
 
   const isBulk = trimmed.includes(",");
