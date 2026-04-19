@@ -64,7 +64,7 @@ function build(options = {}) {
 
                 app.log.warn({ text, user, error }, 'Vote parse failed');
 
-                await sendMessage(app, "Ma ei saanud su hääletusest aru. Palun saada ainult numbrid, nt 6|7 või 6,7.");
+                await sendMessage(app, "Ma ei saanud su hääletusest aru. Palun saada ainult numbrid, eralda neid ',' või '|'.");
 
                 return;
 
