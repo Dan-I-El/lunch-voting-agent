@@ -28,9 +28,9 @@ const fastify = app({
 
 // TODO - update for the production
 const COMMON_SCHEDULE = "* * 1-7";
-const GATHERING_TIME = "1 16 " + COMMON_SCHEDULE;
-const RESULTS_TIME = "3 16 " + COMMON_SCHEDULE;
-const ORDER_TIME = "4 16 " + COMMON_SCHEDULE;
+const GATHERING_TIME = "42 23 " + COMMON_SCHEDULE;
+const RESULTS_TIME = "44 23 " + COMMON_SCHEDULE;
+const ORDER_TIME = "45 23 " + COMMON_SCHEDULE;
 
 try {
   
