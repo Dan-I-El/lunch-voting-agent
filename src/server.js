@@ -28,9 +28,9 @@ const fastify = app({
 
 // TODO - update for the production
 const COMMON_SCHEDULE = "* * 1-7";
-const GATHERING_TIME = "25 15 " + COMMON_SCHEDULE;
-const RESULTS_TIME = "27 15 " + COMMON_SCHEDULE;
-const ORDER_TIME = "28 15 " + COMMON_SCHEDULE;
+const GATHERING_TIME = "1 16 " + COMMON_SCHEDULE;
+const RESULTS_TIME = "3 16 " + COMMON_SCHEDULE;
+const ORDER_TIME = "4 16 " + COMMON_SCHEDULE;
 
 try {
   
@@ -62,7 +62,7 @@ try {
       fastify.log.info("Lunch menu message sent;");
 
     },
-    // TODO - improve error handling
+
     start: true,
     timeZone: "Europe/Tallinn",
     errorHandler: async (error) => {
