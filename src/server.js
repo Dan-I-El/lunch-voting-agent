@@ -27,10 +27,10 @@ const fastify = app({
 // Sends winner at 11.55am. Users cannot vote after that.
 
 // TODO - update for the production
-const COMMON_SCHEDULE = "* * 1-7";
-const GATHERING_TIME = "42 23 " + COMMON_SCHEDULE;
-const RESULTS_TIME = "44 23 " + COMMON_SCHEDULE;
-const ORDER_TIME = "45 23 " + COMMON_SCHEDULE;
+const COMMON_SCHEDULE = "* * mon-fri";
+const GATHERING_TIME = "0 10 " + COMMON_SCHEDULE;
+const RESULTS_TIME = "30 11 " + COMMON_SCHEDULE;
+const ORDER_TIME = "55 11 " + COMMON_SCHEDULE;
 
 try {
   
