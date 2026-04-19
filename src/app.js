@@ -97,7 +97,9 @@ function build(options = {}) {
 
                     app.log.info("No offers found for today");
 
-                    return { message: "No offers available today" };
+                    await sendMessage(app, "Ma ikka magan. Näeme peale 10.");
+
+                    return;
                 }
 
                 // for (const vote of votes) {
