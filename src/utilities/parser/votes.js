@@ -8,23 +8,23 @@ function parseVoteMessage(input) {
 
   // Strict pattern:
   // - Single number: "3"
-  // - Slash-separated: "4/5/6"
+  // - Pipe-separated: "4|5|6"
   // - Comma-separated: "4,5,6"
   // - No mixing separators
   // - No empty values
   // - Integers or decimals allowed
-  const validPattern = /^(\d+)([\/,](\d+))*$/;
+  const validPattern = /^(\d+)([\|,](\d+))*$/;
 
   if (!validPattern.test(trimmed)) {
     throw new Error("Wrong format.");
   }
 
   const isBulk = trimmed.includes(",");
-  const isSlash = trimmed.includes("/");
+  const isSlash = trimmed.includes("|");
 
   // Prevent mixing separators explicitly (extra safety)
   if (isBulk && isSlash) {
-    throw new Error("Invalid format: cannot mix ',' and '/'.");
+    throw new Error("Invalid format: cannot mix ',' and '|'.");
   }
 
   let votesList;
@@ -32,7 +32,7 @@ function parseVoteMessage(input) {
   if (isBulk) {
     votesList = trimmed.split(",");
   } else if (isSlash) {
-    votesList = trimmed.split("/");
+    votesList = trimmed.split("|");
   } else {
     votesList = [trimmed];
   }

@@ -38,21 +38,21 @@ function build(options = {}) {
                 channel
             } = event;
 
-            app.log.info({ text, user, channel, ts, thread_ts }, 'Incoming Slack message');
+            console.log({ text, user, channel, ts, thread_ts }, 'Incoming Slack message');
 
-            const now = getTallinnTime();
+            // const now = getTallinnTime();
 
-            const votingEndTime = new Date(now);
+            // const votingEndTime = new Date(now);
 
-            votingEndTime.setHours(11, 55, 0, 0);
+            // votingEndTime.setHours(11, 55, 0, 0);
 
-            if (now > votingEndTime) {
+            // if (now > votingEndTime) {
 
-                await sendMessage(app, "Mu tööpäev on tänaseks lõppenud. Näeme homme! :)");
+            //     await sendMessage(app, "Mu tööpäev on tänaseks lõppenud. Näeme homme! :)");
 
-                return;
+            //     return;
 
-            }
+            // }
 
             let votes;
 
