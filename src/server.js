@@ -26,10 +26,11 @@ const fastify = app({
 // User responds with the numbers. Should accept different numbers divided by .,/\/s. Votes are saved to the database.
 // Sends winner at 11.55am. Users cannot vote after that.
 
-const COMMON_SCHEDULE = "* * 1-7";
-const GATHERING_TIME = "55 0 " + COMMON_SCHEDULE;
-const RESULTS_TIME = "59 0 " + COMMON_SCHEDULE;
-const ORDER_TIME = "1 1 " + COMMON_SCHEDULE;
+// TODO - update for the production
+const COMMON_SCHEDULE = "* * mon-sun";
+const GATHERING_TIME = "25 15 " + COMMON_SCHEDULE;
+const RESULTS_TIME = "27 15 " + COMMON_SCHEDULE;
+const ORDER_TIME = "28 15 " + COMMON_SCHEDULE;
 
 try {
   
@@ -46,7 +47,7 @@ try {
 
       if (!offers || offers.length === 0) {
 
-        fastify.log.info("No offers found. othing to save to the database.");
+        fastify.log.info("No offers found. Nothing to save to the database.");
 
         return;
         
@@ -58,13 +59,19 @@ try {
         
       await sendMessage(fastify, text);
 
-      fastify.log.info("Lunch message sent");
+      fastify.log.info("Lunch menu message sent;");
 
     },
     // TODO - improve error handling
     start: true,
     timeZone: "Europe/Tallinn",
-    errorHandler: (error) => (fastify.log.error(error)),
+    errorHandler: async (error) => {
+
+      fastify.log.error(error);
+
+      await sendMessage(fastify, "Oi, miskit läks valesti. Palun proovi uuesti.");
+
+    },
   });
 
   const votesSendingJob = CronJob.from({

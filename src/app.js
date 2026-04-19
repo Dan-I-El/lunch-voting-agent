@@ -101,6 +101,7 @@ function build(options = {}) {
 
                 app.log.error(error);
 
+                await sendMessage(app, "Oi, tekkis viga su hääle salvestamisel. Palun proovi uuesti.");
                 
             } finally {
                 
