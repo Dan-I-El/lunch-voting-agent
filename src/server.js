@@ -37,98 +37,98 @@ try {
 // add appropriate 'host' parameter
   // fastify.listen({ port: process.env.APP_PORT || 8080, host: '0.0.0.0' });
 
-  const offersGatheringJob = CronJob.from({
-    cronTime: GATHERING_TIME,
-    onTick: async () => {
+  // const offersGatheringJob = CronJob.from({
+  //   cronTime: GATHERING_TIME,
+  //   onTick: async () => {
 
-      fastify.log.info("Running offers gathering job");
+  //     fastify.log.info("Running offers gathering job");
 
-      const offers = await getOffersList(fastify);
+  //     const offers = await getOffersList(fastify);
 
-      if (!offers || offers.length === 0) {
+  //     if (!offers || offers.length === 0) {
 
-        fastify.log.info("No offers found. Nothing to save to the database.");
+  //       fastify.log.info("No offers found. Nothing to save to the database.");
 
-        return;
+  //       return;
         
-      }
+  //     }
 
-      await saveOffers(fastify, offers);
+  //     await saveOffers(fastify, offers);
 
-      const text = composeLunchListMessage(offers);
+  //     const text = composeLunchListMessage(offers);
         
-      await sendMessage(fastify, text);
+  //     await sendMessage(fastify, text);
 
-      fastify.log.info("Lunch menu message sent;");
+  //     fastify.log.info("Lunch menu message sent;");
 
-    },
+  //   },
 
-    start: true,
-    timeZone: "Europe/Tallinn",
-    errorHandler: async (error) => {
+  //   start: true,
+  //   timeZone: "Europe/Tallinn",
+  //   errorHandler: async (error) => {
 
-      fastify.log.error(error);
+  //     fastify.log.error(error);
 
-      await sendMessage(fastify, "Oi, miskit läks valesti. Palun proovi uuesti.");
+  //     await sendMessage(fastify, "Oi, miskit läks valesti. Palun proovi uuesti.");
 
-    },
-  });
+  //   },
+  // });
 
-  const votesSendingJob = CronJob.from({
-    cronTime: RESULTS_TIME,
-    onTick: async () => {
+  // const votesSendingJob = CronJob.from({
+  //   cronTime: RESULTS_TIME,
+  //   onTick: async () => {
 
-      fastify.log.info("Running votes gathering job");
+  //     fastify.log.info("Running votes gathering job");
 
-      const winner = await calculateWinner(fastify);
+  //     const winner = await calculateWinner(fastify);
 
-      if (!winner) {
+  //     if (!winner) {
 
-        fastify.log.info("Couldn't calculate winner, the message won't be sent");
+  //       fastify.log.info("Couldn't calculate winner, the message won't be sent");
 
-        return;
+  //       return;
         
-      }
+  //     }
       
-      const text = composeWinnerMessage(winner);
+  //     const text = composeWinnerMessage(winner);
 
-      await sendMessage(fastify, text);
+  //     await sendMessage(fastify, text);
 
-      fastify.log.info("Winner message sent");
+  //     fastify.log.info("Winner message sent");
 
-    },
-    start: true,
-    timeZone: "Europe/Tallinn",
-    errorHandler: (error) => (fastify.log.error(error)),
-  });
+  //   },
+  //   start: true,
+  //   timeZone: "Europe/Tallinn",
+  //   errorHandler: (error) => (fastify.log.error(error)),
+  // });
 
-  const orderSendingJob = CronJob.from({
-    cronTime: ORDER_TIME,
-    onTick: async () => {
+  // const orderSendingJob = CronJob.from({
+  //   cronTime: ORDER_TIME,
+  //   onTick: async () => {
 
-      fastify.log.info("Running order composing job");
+  //     fastify.log.info("Running order composing job");
 
-        const order = await getChosenOffers(fastify);
+  //       const order = await getChosenOffers(fastify);
 
-        if (!order) {
+  //       if (!order) {
 
-          fastify.log.info("Couldn't create an order. The message won't be sent.");
+  //         fastify.log.info("Couldn't create an order. The message won't be sent.");
 
-          return;
+  //         return;
           
-        }
+  //       }
 
-        const message = composeOrderMessage(order);
+  //       const message = composeOrderMessage(order);
 
-        await sendMessage(fastify, message);
+  //       await sendMessage(fastify, message);
 
-        fastify.log.info("Order message sent");
+  //       fastify.log.info("Order message sent");
 
-    },
-    start: true,
-    timeZone: "Europe/Tallinn",
-    errorHandler: (error) => (fastify.log.error(error)),
-  });
+  //   },
+  //   start: true,
+  //   timeZone: "Europe/Tallinn",
+  //   errorHandler: (error) => (fastify.log.error(error)),
+  // });
 
 } catch (err) {
 
