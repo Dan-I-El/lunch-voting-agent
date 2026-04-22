@@ -35,7 +35,7 @@ const ORDER_TIME = "55 11 " + COMMON_SCHEDULE;
 try {
   
 // add appropriate 'host' parameter
-  fastify.listen({ port: process.env.APP_PORT || 8080, host: '0.0.0.0' });
+  // fastify.listen({ port: process.env.APP_PORT || 8080, host: '0.0.0.0' });
 
   const offersGatheringJob = CronJob.from({
     cronTime: GATHERING_TIME,
